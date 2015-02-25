@@ -67,7 +67,7 @@
 #   Innovation Limited ("Isis"), the technology transfer company of the
 #   University, to negotiate a licence. Contact details are:
 #   innovation@isis.ox.ac.uk quoting reference DE/9564.
-export LC_NUMERIC=C
+export LC_ALL=C
 
 Usage() {
     echo "QUASAR Bayesian Inference for Arterial Spin Labelling MRI"
@@ -243,7 +243,6 @@ if [ $iform = "q" ]; then
     
     # first break out all the TIs
     $asl_file --data=data --ntis=$ntis --ibf=tis --iaf=tc --split=ti
-    echo finish breaking out
     # now we have 13 tis each with 84 volumes
     
     # Within each TI: separate the phases 
@@ -255,7 +254,6 @@ if [ $iform = "q" ]; then
         # NB using asl_file to split the phases (pseudo TIs)
         # leaves TC pairs together
     done
-    echo finish separate phases
 
     #now assemble the multiTI files
     phslist=""
@@ -271,7 +269,6 @@ if [ $iform = "q" ]; then
 	$asl_file --data=aslraw_ph$j --ntis=$ntis --ibf=tis --iaf=tc --mean=aslraw_ph$j
 	phslist=$phslist" aslraw_ph$j"
      done
-     echo finish assembling
     fslmerge -t aslraw $phslist
 # data is now in 'f' form
 elif [ $iform = "f" ]; then
@@ -280,15 +277,13 @@ elif [ $iform = "f" ]; then
 fi
 
 # TC difference
-$asl_file --data=aslraw --ntfis=$ntis --ibf=tis --iaf=tc --diff --out=asldata
-echo finish TC difference
+$asl_file --data=aslraw --ntis=$ntis --ibf=tis --iaf=tc --diff --out=asldata
 # discard the final (low flip angle) phase from the differenced data
 # we do not (currently) use this for the main analysis
 nkeep=`expr $ntis \* 6`
 fslroi asldata asldata 0 $nkeep
 # extract control images
 $asl_file --data=aslraw --ntis=$ntis --ibf=tis --iaf=tc --spairs --out=aslraw
-echo finish extract control images
 immv aslraw_even aslcontrol
 
 if [ -z $mask ]; then
@@ -328,8 +323,8 @@ if [ -z "$calibcmds" ]; then
     cinstr=" -div $tempdir/calib/M0t -mul 0.9 " # partition coefficient 0.9
 
     #save calibration results to output directory for reference
-    imcp calib/M0t $stdir/$outdir/M0t
-    imcp calib/T1t $stdir/$outdir/T1t
+    imcp calib/M0t $outdir/M0t
+    imcp calib/T1t $outdir/T1t
 
 else
     # we have some commands to pass to asl_calib
@@ -343,8 +338,8 @@ else
     cd $tempdir
 
     #save calibration results to output directory for reference
-    cp calib/M0a.txt $stdir/$outdir/M0a.txt
-    imcp calib/mean_T1t $stdir/$outdir/T1t
+    cp calib/M0a.txt $outdir/M0a.txt
+    imcp calib/mean_T1t $outdir/T1t
 fi
 
 
