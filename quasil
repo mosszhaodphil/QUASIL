@@ -328,8 +328,8 @@ if [ -z "$calibcmds" ]; then
     cinstr=" -div $tempdir/calib/M0t -mul 0.9 " # partition coefficient 0.9
 
     #save calibration results to output directory for reference
-    imcp calib/M0t $outdir/M0t
-    imcp calib/T1t $outdir/T1t
+    imcp calib/M0t $stdir/$outdir/M0t
+    imcp calib/T1t $stdir/$outdir/T1t
 
 else
     # we have some commands to pass to asl_calib
@@ -343,8 +343,8 @@ else
     cd $tempdir
 
     #save calibration results to output directory for reference
-    cp calib/M0a.txt $outdir/M0a.txt
-    imcp calib/mean_T1t $outdir/T1t
+    cp calib/M0a.txt $stdir/$outdir/M0a.txt
+    imcp calib/mean_T1t $stdir/$outdir/T1t
 fi
 
 
